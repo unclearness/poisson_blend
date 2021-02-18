@@ -57,9 +57,9 @@ void loadImage(const char* file, ImageData& image,
   }
 
   for (unsigned int i = 0; i < buf.size(); i += 4) {
-    vec3 v = vec3(pow(buf[i + 0] / 255.0f, 1.0f / gamma),
-                  pow(buf[i + 1] / 255.0f, 1.0f / gamma),
-                  pow(buf[i + 2] / 255.0f, 1.0f / gamma));
+    vec3 v = vec3(pow(buf[static_cast<size_t>(i) + 0] / 255.0f, 1.0f / gamma),
+                  pow(buf[static_cast<size_t>(i) + 1] / 255.0f, 1.0f / gamma),
+                  pow(buf[static_cast<size_t>(i) + 2] / 255.0f, 1.0f / gamma));
 
     image.data.push_back(v);
   }
@@ -158,7 +158,10 @@ int main(int argc, char* argv[]) {
   loadImage(sourceFile, sourceImage);
 
   std::vector<unsigned char> outImage;
-  nanopb::PoissonBlend(maskImage, sourceImage, targetImage, mx, my, outImage);
+  bool ret = nanopb::PoissonBlend(maskImage, sourceImage, targetImage, mx, my, outImage);
+  if (!ret) {
+    printHelpExit();
+  }
 
   lodepng::encode(outputFile, outImage, targetImage.width, targetImage.height);
 

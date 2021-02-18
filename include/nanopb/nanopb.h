@@ -150,7 +150,7 @@ inline bool PoissonBlend(const ImageData& maskImage,
   // we represent the pixel coordinates in the target image as a single 1D
   // number, by flattening the (x,y) into a single index value. Every (x,y) will
   // have its own unique 1D coordinate.
-  std::function<int(int, int)> targetFlatten =
+  std::function<unsigned int(unsigned int, unsigned int)> targetFlatten =
       [&](unsigned int x, unsigned int y) { return targetImage.width * y + x; };
 
   std::function<unsigned int(unsigned int, unsigned int)> maskFlatten =
@@ -359,11 +359,11 @@ inline bool PoissonBlend(const ImageData& maskImage,
           col[1] = clamp(col[1]);
           col[2] = clamp(col[2]);
 
-          outImage[4 * targetFlatten(x, y) + 0] =
+          outImage[4 * static_cast<size_t>(targetFlatten(x, y)) + 0] =
               (unsigned char)(pow(col[0], gamma) * 255.0f);
-          outImage[4 * targetFlatten(x, y) + 1] =
+          outImage[4 * static_cast<size_t>(targetFlatten(x, y)) + 1] =
               (unsigned char)(pow(col[1], gamma) * 255.0f);
-          outImage[4 * targetFlatten(x, y) + 2] =
+          outImage[4 * static_cast<size_t>(targetFlatten(x, y)) + 2] =
               (unsigned char)(pow(col[2], gamma) * 255.0f);
         }
       }
